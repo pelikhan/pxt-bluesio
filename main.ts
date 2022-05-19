@@ -17,7 +17,11 @@ namespace bluesio {
     }
 
     export interface HubRequest extends Request {
-        req: "hub.status" | "hub.sync" | "hub.sync.status" | "hub.get"
+        req: "hub.status"
+        | "hub.sync"
+        | "hub.sync.status"
+        | "hub.get"
+        | "hub.set"
     }
 
     export interface LogRequest extends Request {
@@ -26,7 +30,7 @@ namespace bluesio {
     }
 
     export interface NoteRequest extends Request {
-        req: "note.add"
+        req: "note.add" | "note.get" | "note.delete" | "note.udpate"
         body: any
     }
 

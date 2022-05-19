@@ -2,6 +2,9 @@ namespace bluesio {
     // https://dev.blues.io/guides-and-tutorials/notecard-guides/serial-over-i2c-protocol/
     export let ADDRESS = 0x17
     const CHUNK = 254
+    const EVENT_ID = 13456
+    const MAX_QUEUE = 5
+
     function log(msg: string) {
         console.log(`notes> ` + msg)
     }
@@ -13,18 +16,28 @@ namespace bluesio {
         req: string
     }
 
-    export interface Hub extends Request {
+    export interface HubRequest extends Request {
         req: "hub.status" | "hub.sync" | "hub.sync.status" | "hub.get"
     }
 
-    export interface Log extends Request {
+    export interface LogRequest extends Request {
         req: "hub.log"
         text: string
     }
 
-    export interface Note extends Request {
+    export interface NoteRequest extends Request {
         req: "note.add"
         body: any
+    }
+
+    // a queue of requests to avoid
+    const pending: Request[] = []
+
+    /**
+     * The number of pending requests
+     */
+    export function requestQueueLength() {
+        return pending.length
     }
 
     /**
@@ -36,6 +49,27 @@ namespace bluesio {
             return undefined
         }
 
+        if (pending.length > MAX_QUEUE) {
+            log(`request queue full`)
+            return undefined
+        }
+
+        // block until it's our turn to send a message
+        pending.push(req)
+        while (pending[0] != req)
+            pause(1000)
+
+        let res: Request
+        try {
+            res = requestSync(req)
+        }
+        finally {
+            pending.shift()
+        }
+        return res
+    }
+
+    function requestSync(req: Request): Request {
         // notes will reconstruct the JSON message until \n is found
         const str = JSON.stringify(req) + "\n"
         const buf = control.createBufferFromUTF8(str)
@@ -45,7 +79,7 @@ namespace bluesio {
         // handshake
         const handshake = query()
         if (!handshake) return undefined
-        
+
         // data write
         const error = transmit(buf)
         if (error) return undefined
@@ -56,6 +90,7 @@ namespace bluesio {
         log(`< ${rstr}`)
         const r = JSON.parse(rstr) as Request
         pause(250)
+
         return r
     }
 
@@ -78,7 +113,7 @@ namespace bluesio {
             sz = query()
         }
         let res = control.createBuffer(0)
-        while(sz[0] > 0) {
+        while (sz[0] > 0) {
             // debug(`reading ${sz[0]} bytes`)
             const readReq = control.createBuffer(2)
             readReq[0] = 0

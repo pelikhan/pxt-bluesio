@@ -1,5 +1,6 @@
+# blues.io note apis
 
-> Open this page at [https://pelikhan.github.io/pxt-bluesio/](https://pelikhan.github.io/pxt-bluesio/)
+This library implements the I2C protocol to interact with a blues.io notecard.
 
 ## Use as Extension
 
@@ -9,21 +10,6 @@ This repository can be added as an **extension** in MakeCode.
 * click on **New Project**
 * click on **Extensions** under the gearwheel menu
 * search for **https://github.com/pelikhan/pxt-bluesio** and import
-
-## Edit this project ![Build status badge](https://github.com/pelikhan/pxt-bluesio/workflows/MakeCode/badge.svg)
-
-To edit this repository in MakeCode.
-
-* open [https://makecode.microbit.org/](https://makecode.microbit.org/)
-* click on **Import** then click on **Import URL**
-* paste **https://github.com/pelikhan/pxt-bluesio** and click import
-
-## Blocks preview
-
-This image shows the blocks code from the last commit in master.
-This image may take a few minutes to refresh.
-
-![A rendered view of the blocks](https://github.com/pelikhan/pxt-bluesio/raw/master/.github/makecode/blocks.png)
 
 #### Metadata (used for search, rendering)
 

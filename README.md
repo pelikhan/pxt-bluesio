@@ -2,6 +2,9 @@
 
 This library implements the I2C protocol to interact with a blues.io notecard.
 
+The JSON format and notes API are documented at
+https://dev.blues.io/reference/notecard-api/.
+
 ## Use as Extension
 
 This repository can be added as an **extension** in MakeCode.

@@ -1,9 +1,15 @@
 namespace bluesio {
     // https://dev.blues.io/guides-and-tutorials/notecard-guides/serial-over-i2c-protocol/
+
+    /**
+     * Default 0x17 I2c address of notecard
+     */
     export let ADDRESS = 0x17
     const CHUNK = 254
-    const EVENT_ID = 13456
-    const MAX_QUEUE = 5
+    /**
+     * Maximum number of pending note messages before dropping them.
+     */
+    export let MAX_QUEUE = 5
 
     function log(msg: string) {
         console.log(`notes> ` + msg)
@@ -15,6 +21,8 @@ namespace bluesio {
     export interface Request {
         req: string
     }
+
+    export interface Response { }
 
     export interface HubRequest extends Request {
         req: "hub.status"
@@ -31,7 +39,17 @@ namespace bluesio {
 
     export interface NoteRequest extends Request {
         req: "note.add" | "note.get" | "note.delete" | "note.udpate"
+    }
+
+    export interface NoteAddRequest extends NoteRequest {
+        req: "note.add"
         body: any
+        file?: string
+        note?: string
+        sync?: boolean
+        product?: string
+        key?: string
+        verify?: boolean
     }
 
     // a queue of requests to avoid
@@ -47,7 +65,7 @@ namespace bluesio {
     /**
      * Sends a request to the notecard over i2c
      */
-    export function request(req: Request): Request {
+    export function request(req: Request): Response {
         if (!req || !req.req) {
             log(`invalid request`)
             return undefined
@@ -63,7 +81,7 @@ namespace bluesio {
         while (pending[0] != req)
             pause(1000)
 
-        let res: Request
+        let res: Response
         try {
             res = requestSync(req)
         }
@@ -73,12 +91,12 @@ namespace bluesio {
         return res
     }
 
-    function requestSync(req: Request): Request {
+    function requestSync(req: Request): Response {
         // notes will reconstruct the JSON message until \n is found
         const str = JSON.stringify(req) + "\n"
         const buf = control.createBufferFromUTF8(str)
 
-        log(`${str}`)
+        log(str)
 
         // handshake
         const handshake = query()
@@ -91,8 +109,8 @@ namespace bluesio {
         // data poll
         const res = receive()
         const rstr = res.toString()
-        log(`< ${rstr}`)
-        const r = JSON.parse(rstr) as Request
+        log(rstr)
+        const r = JSON.parse(rstr) as Response
         pause(250)
 
         return r

@@ -6,6 +6,12 @@ input.onButtonPressed(Button.A, () => {
         req: "hub.log",
         text: "makecode"
     })
+    bluesio.request(<bluesio.Hub>{
+        req: "hub.get"
+    })
+    bluesio.request(<bluesio.Hub>{
+        req: "hub.sync"
+    })
 })
 
 input.onButtonPressed(Button.B, () => {

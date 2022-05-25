@@ -92,19 +92,16 @@ namespace bluesio {
     }
 
     function requestSync(req: Request): Response {
-        // notes will reconstruct the JSON message until \n is found
-        const str = JSON.stringify(req) + "\n"
-        const buf = control.createBufferFromUTF8(str)
-
-        log(str)
-
         // handshake
         const handshake = query()
         if (!handshake) return undefined
 
         // data write
-        const error = transmit(buf)
-        if (error) return undefined
+        {
+            const buf = encode(req)
+            const error = transmit(buf)
+            if (error) return undefined
+        } // allow release of buffer
 
         // data poll
         const res = receive()
@@ -112,7 +109,6 @@ namespace bluesio {
         log(rstr)
         const r = JSON.parse(rstr) as Response
         pause(250)
-
         return r
     }
 
@@ -126,6 +122,14 @@ namespace bluesio {
         const sz = pins.i2cReadBuffer(ADDRESS, 2)
         // debug(`query > ${sz.toHex()}`)
         return sz
+    }
+
+    function encode(req: Request): Buffer {
+        // notes will reconstruct the JSON message until \n is found
+        const str = JSON.stringify(req) + "\n"
+        const buf = control.createBufferFromUTF8(str)
+        log(str)
+        return buf
     }
 
     function receive(): Buffer {

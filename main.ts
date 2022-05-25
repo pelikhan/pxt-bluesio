@@ -1,4 +1,4 @@
-namespace bluesio {
+namespace notecard {
     // https://dev.blues.io/guides-and-tutorials/notecard-guides/serial-over-i2c-protocol/
 
     /**

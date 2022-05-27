@@ -14,4 +14,4 @@ jobs:
         with:
           submodules: recursive
       - run: npx makecode
-      - run: npx semantic-release
+      - run: npx semantic-release --branches master

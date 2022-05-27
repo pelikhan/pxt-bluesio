@@ -1,0 +1,17 @@
+name: MakeCode Build
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14.x]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - run: npx makecode
+      - run: npx semantic-release

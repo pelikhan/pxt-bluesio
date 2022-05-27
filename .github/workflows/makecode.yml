@@ -14,4 +14,4 @@ jobs:
         with:
           submodules: recursive
       - run: npx makecode
-      - run: npx semantic-release --branches master
+      - run: npx semantic-release --branches master --plugins ['@semantic-release/commit-analyzer']
